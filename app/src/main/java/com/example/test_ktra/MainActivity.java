@@ -56,14 +56,37 @@ public class MainActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name = edtName.getText().toString();
-                String phone = edtPhone.getText().toString();
-                String gender = ((RadioButton) findViewById(radioGroupGender.getCheckedRadioButtonId())).getText().toString();
-                String location = spinnerLocation.getSelectedItem().toString();
-                int selectedAvatar = avatars[spinnerAvatar.getSelectedItemPosition()];
-                thongTinList.add(new ThongTin(name, phone, gender, location,selectedAvatar));
-                adapter.notifyDataSetChanged();
+                String name = edtName.getText().toString().trim();
+                String phone = edtPhone.getText().toString().trim();
+                int selectedGenderId = radioGroupGender.getCheckedRadioButtonId();
+                int selectedLocationPosition = spinnerLocation.getSelectedItemPosition();
+                int selectedAvatarPosition = spinnerAvatar.getSelectedItemPosition();
+
+                // Kiểm tra xem tất cả các trường đã được điền đầy đủ chưa
+                if (name.isEmpty() || phone.isEmpty() || selectedGenderId == -1 ||
+                        selectedLocationPosition == 0 || selectedAvatarPosition == -1) {
+                    // Hiển thị thông báo lỗi nếu có trường nào chưa được điền
+                    Toast.makeText(MainActivity.this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Nếu tất cả các trường đã được điền, thêm thông tin mới vào danh sách
+                    String gender = ((RadioButton) findViewById(selectedGenderId)).getText().toString();
+                    String location = spinnerLocation.getSelectedItem().toString();
+                    int selectedAvatar = avatars[selectedAvatarPosition];
+
+                    thongTinList.add(new ThongTin(name, phone, gender, location, selectedAvatar));
+                    adapter.notifyDataSetChanged();
+
+                    // Xóa nội dung các trường nhập liệu sau khi thêm thành công
+                    edtName.setText("");
+                    edtPhone.setText("");
+                    radioGroupGender.clearCheck();
+                    spinnerLocation.setSelection(0);
+                    spinnerAvatar.setSelection(0);
+
+                    Toast.makeText(MainActivity.this, "Đã thêm thông tin thành công", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
     }
 }
